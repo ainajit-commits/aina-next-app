@@ -15,6 +15,9 @@ export default function ToDoList(){
     const [status, setStatus] = useState(null);
     const [open, setOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [editingTask, setEditingTask] = useState(null);
+
+    const resetEditingTask = () => setEditingTask(null);
 
     const filteredTask = 
             status == null ? tasks
@@ -33,12 +36,36 @@ export default function ToDoList(){
         return <span style={{color: "red"}}>ไม่ได้เป็นนักศึกษาแล้ว</span>
     }
 
+    const Status = (status : boolean) => {
+        if(status)
+            return <span style={{color: "green"}}>เสร็จสิ้น</span>
+        return <span style={{color: "red"}}>ยังไม่เสร็จ</span>
+    }
+
     const onEdit = (t) => {
-        alert(`งานที่คุณต้องการแก้ไข ${t}`);
+        //alert(`งานที่คุณต้องการแก้ไข ${t}`);
+        setEditingTask(t);
+    }
+
+    const updateTask = (id, title, status) => {
+        setTasks(
+            tasks => tasks.map(
+                t => t.id === id ?
+                {
+                ...t,
+                title: title,
+                status: status,
+                } : t
+            ));
+            setEditingTask(null);
     }
 
     const onDelete = (id) => {
-        alert(`คุณต้องการลบข้อมูล รหัสงาน ${id}?`);
+        //alert(`คุณต้องการลบข้อมูล รหัสงาน ${id}?`);
+        const updateTasks = tasks.filter(
+            item => item.id != id
+        );
+        setTasks(updateTasks);
     }
 
     const tmpTdl= filteredTask.map(item=>{
@@ -50,7 +77,7 @@ export default function ToDoList(){
         <p className="mt-2 text-sm text-gray-200 dark:text-gray-200">{desc}</p>
         <p className="mt-2 text-sm text-gray-200 dark:text-gray-200">{data_added} / {item.data_added}</p>
         <p className="mt-2 text-sm text-gray-200 dark:text-gray-200">{author}</p>
-        <p className="mt-2 text-sm text-gray-200 dark:text-gray-200">{status}</p>
+        <p className="mt-2 text-sm text-gray-200 dark:text-gray-200">{Status(status)}</p>
 
         <div className="flex gap-2 mt-2">
     {/* View */}
@@ -98,7 +125,12 @@ export default function ToDoList(){
             </div> 
             </div>
 
-            <ToDoForm addTask={addTask}/>
+            <ToDoForm 
+            addTask={addTask}
+            editingTask={editingTask}
+            updateTask={updateTask}
+            resetEditingTask={resetEditingTask}
+            />
             <div className="flex justify-center gap-3  space-y-3 flex justify-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="text-body bg-pink-200 border border-default hover:bg-neutral-secondary-medium hover:text-heading 
                     focus:ring-3 focus:ring-neutral-tertiary-soft font-medium leading-5 rounded-e-base text-sm px-3 py-2 focus:outline-none">งานที่ต้องทำ {numOfTasks} รายการ</div>
