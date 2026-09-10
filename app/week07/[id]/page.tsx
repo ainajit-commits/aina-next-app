@@ -1,14 +1,36 @@
+'use client';
+
 import Link from "next/link";
 import { shops } from "../components/shopItem";
 import { Suspense } from "react";
 import Loading from "../components/Loading";
+import { useState, useEffect } from "react";
 
 export default async  function ShopDetail({params}){
     const { id } = await params;
 
-    const shop = shops.find(
-        item => item.id === Number(id)
-    );
+    //const shop = shops.find(
+       // item => item.id === Number(id)
+    //);
+
+    const [shop, setShop] = useState({});
+
+    useEffect(() =>{
+      const fetchData = async() => {
+        try {
+          const resData = await fetch(`http://localhost:8000/${id}`);
+          if(resData.ok){
+            const resShop = await resData.json();
+            setShop(resShop);
+          }else{
+            throw new Error(`Network response was not ok.`);
+          }
+      }catch(error){
+        console.log(`Error fetching data: ${error}`);
+      }
+    }
+    fetchData();
+    },[shop]);
     const Status = (status : boolean) => {
         if(status)
             return <span style={{color: "green"}}>open</span>
@@ -23,17 +45,17 @@ export default async  function ShopDetail({params}){
       </h1>
 
       <div
-        key={shop.id}
+        key={shop.shopId}
         className="border rounded-lg p-4 m-4"
       >
         <p className="mt-4 font-semibold">
-          ID: {shop.id}
+          ID: {shop.shopId}
         </p>
         <p className="my-4">
-          Title: {shop.title}
+          Title: {shop.shopName}
         </p>
         <p className="my-4">
-          Open Status: {Status(shop.openStatus)}
+          Open Status: {Status(shop.shopStatus)}
         </p>
       </div>
 
