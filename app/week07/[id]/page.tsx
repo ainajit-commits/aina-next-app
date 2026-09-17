@@ -1,36 +1,26 @@
-'use client';
-
 import Link from "next/link";
-import { shops } from "../components/shopItem";
+//import { shops } from "../components/shopItem";
 import { Suspense } from "react";
 import Loading from "../components/Loading";
-import { useState, useEffect } from "react";
+
 
 export default async  function ShopDetail({params}){
     const { id } = await params;
 
-    //const shop = shops.find(
-       // item => item.id === Number(id)
-    //);
+    let shop = {};
 
-    const [shop, setShop] = useState({});
+     try {
+      const resData = await fetch(`http://localhost:8000/shops/${id}`);
+          if(!resData.ok){
 
-    useEffect(() =>{
-      const fetchData = async() => {
-        try {
-          const resData = await fetch(`http://localhost:8000/${id}`);
-          if(resData.ok){
-            const resShop = await resData.json();
-            setShop(resShop);
-          }else{
-            throw new Error(`Network response was not ok.`);
-          }
-      }catch(error){
+          throw new Error(`Network response was not ok.`);
+        }
+        shop = await resData.json();
+        console.log(shop);
+        }catch(error){
         console.log(`Error fetching data: ${error}`);
-      }
-    }
-    fetchData();
-    },[shop]);
+        }
+
     const Status = (status : boolean) => {
         if(status)
             return <span style={{color: "green"}}>open</span>
@@ -52,7 +42,13 @@ export default async  function ShopDetail({params}){
           ID: {shop.shopId}
         </p>
         <p className="my-4">
-          Title: {shop.shopName}
+          Name: {shop.shopName}
+        </p>
+                <p className="my-4">
+          Type: {shop.shopType}
+        </p>
+                <p className="my-4">
+          Loc: {shop.shopLoc.lat}, {shop.shopLoc.lon}
         </p>
         <p className="my-4">
           Open Status: {Status(shop.shopStatus)}
