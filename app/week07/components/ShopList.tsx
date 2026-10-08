@@ -2,6 +2,8 @@
 
 import {useState} from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 export default function ShopList({data}){
 
     
@@ -14,6 +16,34 @@ export default function ShopList({data}){
         return item.shopName.toLowerCase().includes(searchText)
     }
     );
+
+    // เพิ่มคำสั่งภายใน component ShopList ส่วนของ Script
+  const router = useRouter();
+
+const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this shop?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+  `http://localhost:8000/api/shops/${id}`,
+  {
+    method: "DELETE",
+  }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete Shop");
+      }
+      // Refresh page
+      router.refresh();
+    } catch (error) {
+      alert(error.message);
+    }
+};
     const Status = (status : boolean) => {
         if(status)
             return <span style={{color: "green"}}>open</span>
@@ -38,16 +68,41 @@ export default function ShopList({data}){
             <div className="mb-4 text-gray">
                 Found {data.length} shop(s)
             </div>
+
+        {/* A */}
+            {/* เพิ่มปุ่มเพื่อสร้างร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ตำแหน่งใด ๆ */}
+        <div className="flex justify-between items-center">
+            <Link href="/week07/new"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg">
+            + Add New
+            </Link>
+        </div>
             <div className="space-y-4">
                 {
                     filterShops.map(shop => (
                         <div key={shop.id} className="border border-gray-300 rounded-lg p-4">
                             <h2 className="font-semibold">{shop.shopName}</h2>
                             <p>Open Status: {Status(shop.shopStatus)}</p>
+
+                            
+                         {/* B */}
+                            {/* เพิ่มปุ่มเพื่อแก้ไขข้อมูลร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ */}
+                        <Link href={`/week07/${shop.id}/edit`}
+                            className="bg-yellow-500 text-white px-3 py-2 rounded-lg">
+                                Update
+                        </Link>
+                        
                             <Link href={`/week07/${shop.id}`}
                             className="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded">
                             View Detail
                             </Link>
+                            {/* C */}
+                            {/* เพิ่มปุ่มเพื่อลบร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ */}
+                            <button onClick={(e)=>handleDelete(`${shop.id}`)}
+                                className="ms-1 bg-red-500 text-white px-3 py-2 rounded">
+                                 Delete
+                            </button>
+
                         </div>
                     ))
                 }
