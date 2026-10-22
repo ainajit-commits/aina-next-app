@@ -4,12 +4,21 @@ import {useState} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import UserProfile from "../components/UserProfile";
+import LoginButton from "../components/Login";
+import LogoutButton from "../components/Logout";
+
 export default function ShopList({data}){
 
     
 
     //const router = useRouter();
     const [keyword, setKeyword] = useState("");
+
+    let storedUser ="";
+    if (typeof window !== 'undefined'){
+        storedUser = localStorage.getItem("user");
+    }
 
     const filterShops = data.filter( (item) => {
         const searchText = keyword.toLowerCase();
@@ -50,9 +59,20 @@ const handleDelete = async (id) => {
         return <span style={{color: "red"}}>closed</span>
     };
     return(
+
         <div className="max-w-3xl mx-auto mt-6">
+
+        <div className="flex justify-between items-center">
+            <UserProfile />
+            <br></br>
+            {storedUser ? <LogoutButton />: <LoginButton/>}
+            <br></br>
+            <br></br>
+        </div>
+
         {/* Search */}
-      <div className="mb-6">
+        <div className="mb-6">
+
 
         <input
           type="text"
@@ -85,23 +105,24 @@ const handleDelete = async (id) => {
                             <p>Open Status: {Status(shop.shopStatus)}</p>
 
                             
+                    
                          {/* B */}
-                            {/* เพิ่มปุ่มเพื่อแก้ไขข้อมูลร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ */}
+                         {/* เพิ่มปุ่มเพื่อแก้ไขข้อมูลร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ */}
                         <Link href={`/week07/${shop.id}/edit`}
                             className="bg-yellow-500 text-white px-3 py-2 rounded-lg">
-                                Update
+                            Update
                         </Link>
                         
-                            <Link href={`/week07/${shop.id}`}
+                        <Link href={`/week07/${shop.id}`}
                             className="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded">
                             View Detail
-                            </Link>
-                            {/* C */}
-                            {/* เพิ่มปุ่มเพื่อลบร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ */}
-                            <button onClick={(e)=>handleDelete(`${shop.id}`)}
-                                className="ms-1 bg-red-500 text-white px-3 py-2 rounded">
-                                 Delete
-                            </button>
+                        </Link>
+                        {/* C */}
+                        {/* เพิ่มปุ่มเพื่อลบร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ */}
+                        <button onClick={(e)=>handleDelete(`${shop.id}`)}
+                            className="ms-1 bg-red-500 text-white px-3 py-2 rounded">
+                            Delete
+                        </button>
 
                         </div>
                     ))

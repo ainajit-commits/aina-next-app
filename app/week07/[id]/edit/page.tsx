@@ -35,6 +35,7 @@ export default async function EditShopPage({ params, }) {
   return (
 
     <main className="min-h-screen bg-slate-200 p-6">
+        
       <div className="max-w-2xl mx-auto">
 
         {/* Call create and update form component */}
